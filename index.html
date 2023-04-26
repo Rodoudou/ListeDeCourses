@@ -12,7 +12,7 @@
     <div class="conteneur">
         <header>
           <form>
-            <input type="text" name="nouvel-item" id="nouvel-item" placeholder="Nouvel item" title="Caractères autorisés : les 26 lettres en majuscules et minuscules, les espaces, les chiffres et les parenthèses (le mot doit faire minimum 2 lettres)">
+            <input type="text" name="nouvel-item" id="nouvel-item" placeholder="Nouvel item" required pattern="([A-Za-z\d ()]*)" title="Caractères autorisés : les 26 lettres en majuscules et minuscules, les espaces, les chiffres et les parenthèses (le mot doit faire minimum 2 lettres)" autocomplete="off">
             <input id="ajouter" type="submit" class="bouton" value="Ajouter">
           </form>
         </header>
@@ -26,19 +26,19 @@
     
       <template id="template-item">
         <li>
-          <button class="bouton poignee"><img src="../48 - Presentation deuxieme projet/images/poignee.svg" alt="déplacer un item"></button>
+          <button class="bouton poignee"><img src="/Assets/img/poignee.svg" alt="déplacer un item"></button>
           <p class="nom"></p>
           <div class="separateur-vertical"></div>
           <p class="quantite">1</p>
           <div class="select">
             <select name="unite" class="unite">
-              <option value="u.">u.</option>
+              <option value="u." selected>u.</option>
               <option value="g">g</option>
               <option value="kg">kg</option>
               <option value="L">L</option>
             </select>
           </div>
-          <button class="bouton supprimer"><img src="../48 - Presentation deuxieme projet/images/poubelle.svg" alt="supprimer item"></button>
+          <button class="bouton supprimer" id="btn-supprimer"><img src="/Assets/img/poubelle.svg" alt="supprimer item"></button>
         </li>
       </template>
 </body>
