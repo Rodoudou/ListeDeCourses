@@ -42,6 +42,26 @@ const elFormSubmit = (e) => {
 };
 elForm.addEventListener("submit", elFormSubmit);
 
+inputNewItem.addEventListener('input', ()=>{ 
+    console.log('input');
+    inputNewItem.setCustomValidity('');
+    inputNewItem.checkVisibility();
+    })
+
+
+
+inputNewItem.addEventListener('invalid', ()=>{ 
+    console.log('invalide')
+    const nom = inputNewItem.value;
+    if(nom.length == 0){
+        inputNewItem.setCustomValidity("Vous devez indiquer les informations de l'item, exemple : 250 g chocolat")
+    }else{
+        inputNewItem.setCustomValidity("Les caractères spéciaux, les accents et autres lettres ne sont pas autorisés.");
+    }
+    // 
+ })
+
+
 // btnAjouterOnClick = () => {
 //     console.log("kikou");
 //     console.log("btnSupprimer",btnSupprimer);
