@@ -12,7 +12,7 @@
     <div class="conteneur">
         <header>
           <form>
-            <input type="text" name="nouvel-item" id="nouvel-item" placeholder="Nouvel item" required pattern="([A-Za-z\d ()]*)" title="Caractères autorisés : les 26 lettres en majuscules et minuscules, les espaces, les chiffres et les parenthèses (le mot doit faire minimum 2 lettres)" autocomplete="off">
+            <input type="text" name="nouvel-item" id="nouvel-item" placeholder="Nouvel item" required pattern="([A-Za-z\d ()]*[A-Za-z]{2}[A-Za-z\d ()]*)" title="Caractères autorisés : les 26 lettres en majuscules et minuscules, les espaces, les chiffres et les parenthèses (le mot doit faire minimum 2 lettres)" autocomplete="off">
             <input id="ajouter" type="submit" class="bouton" value="Ajouter">
           </form>
         </header>

@@ -54,7 +54,11 @@ inputNewItem.addEventListener('invalid', ()=>{
     console.log('invalide')
     const nom = inputNewItem.value;
     if(nom.length == 0){
-        inputNewItem.setCustomValidity("Vous devez indiquer les informations de l'item, exemple : 250 g chocolat")
+        inputNewItem.setCustomValidity("Vous devez indiquer les informations de l'item, exemple : 250 g chocolat.")
+    //Ici on vient tester avec cette regex /[A-Za-z]{2}/ si "nom" ne contient pas 2 lettres consécutives
+    }else if(!/[A-Za-z]{2}/.test(nom)){
+        inputNewItem.setCustomValidity("Le nom de l'item doit faire au minimum 2 lettres.");
+
     }else{
         inputNewItem.setCustomValidity("Les caractères spéciaux, les accents et autres lettres ne sont pas autorisés.");
     }
