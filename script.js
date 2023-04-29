@@ -26,13 +26,43 @@ const elFormSubmit = (e) => {
 
   // Supprimer les espaces des qu'il ya 2 espaces consécutifs avec une expression regulière
   nomItem = nomItem.replace(/\s{2,}/g, " ");
+
+  
+  // es ce que le 1er mot est un num ?
+  let mot = nomItem.split(" ");
+  let premierMot = mot[0];
+  let quantite;
+  // console.log("mot =>", mot);
+  // console.log("premierMot =>", premierMot);
+  
+  if (Number.isInteger(Number(premierMot))) {
+    quantite = Number(premierMot);
+    console.log("quantite =>", quantite);
+  }
+  
+  // si c'est une quantité il faut l'extraire
+  
+  // Sinon c'est que c'est juste un nom
+  
+  // Si le 2eme mot est une unité, l'extraire
+  
+  // Sinon c'est que le 2eme mot est un nom
+  
   // Rendre le item avec une maj a la 1ere lettre
   nomItem = `${nomItem[0].toUpperCase()}${nomItem.slice(1)}`;
   console.log("2- nomItem =>", nomItem);
-
+  
   // injecter cette valeur dans l'element li
-  let nomListe = elListe.querySelector(".nom");
+  const nomListe = elListe.querySelector(".nom");
+//  const unite = elListe.querySelector(".unite");
+  const elQuantite = elListe.querySelector(".quantite");
+
   nomListe.textContent = nomItem;
+ elQuantite.textContent = quantite;
+  console.log("elQuantite 1 =>", elQuantite.textContent);
+
+
+
   //Ajouter l'élément li dans la liste ul
   liste.append(elListe);
   // Effacer le input aprés avoir submit
@@ -42,32 +72,34 @@ const elFormSubmit = (e) => {
 };
 elForm.addEventListener("submit", elFormSubmit);
 
-inputNewItem.addEventListener('input', ()=>{ 
-    console.log('input');
-    inputNewItem.setCustomValidity('');
-    inputNewItem.checkVisibility();
-    })
+inputNewItem.addEventListener("input", () => {
+  console.log("input");
+  inputNewItem.setCustomValidity("");
+  inputNewItem.checkVisibility();
+});
 
-
-
-inputNewItem.addEventListener('invalid', ()=>{ 
-    console.log('invalide')
-    const nom = inputNewItem.value;
-    if(nom.length == 0){
-        inputNewItem.setCustomValidity("Vous devez indiquer les informations de l'item, exemple : 250 g chocolat.")
+inputNewItem.addEventListener("invalid", () => {
+  console.log("invalide");
+  const nom = inputNewItem.value;
+  if (nom.length == 0) {
+    inputNewItem.setCustomValidity(
+      "Vous devez indiquer les informations de l'item, exemple : 250 g chocolat."
+    );
     //Ici on vient tester avec cette regex /[A-Za-z]{2}/ si "nom" ne contient pas 2 lettres consécutives
-    }else if(!/[A-Za-z]{2}/.test(nom)){
-        inputNewItem.setCustomValidity("Le nom de l'item doit faire au minimum 2 lettres.");
-
-    }else{
-        inputNewItem.setCustomValidity("Les caractères spéciaux, les accents et autres lettres ne sont pas autorisés.");
-    }
-    // 
- })
-
+  } else if (!/[A-Za-z]{2}/.test(nom)) {
+    inputNewItem.setCustomValidity(
+      "Le nom de l'item doit faire au minimum 2 lettres."
+    );
+  } else {
+    inputNewItem.setCustomValidity(
+      "Les caractères spéciaux, les accents et autres lettres ne sont pas autorisés."
+    );
+  }
+  //
+});
 
 // btnAjouterOnClick = () => {
-//     console.log("kikou");
-//     console.log("btnSupprimer",btnSupprimer);
+//   console.log("kikou");
+//   console.log("btnSupprimer", btnSupprimer);
 // };
 // btnSupprimer.addEventListener("click", btnAjouterOnClick);
