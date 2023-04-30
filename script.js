@@ -8,13 +8,18 @@ const elementListe = document.querySelector("li");
 const btnExporter = document.querySelector("#exporter");
 const elTemplateItem = document.querySelector("#template-item");
 // const btnSupprimer = document.querySelector('button.bouton.supprimer');
-// console.log("btnSupprimer",btnSupprimer);
+const q =  elTemplateItem.content.querySelector(".quantite");
+const  u = elTemplateItem.content.querySelector(".unite");
+
+const DEFAUT_QUANTITE = Number(q.textContent);
+const  DEFAUT_UNITE = u.selectedOptions[0].value;
+console.log("DEFAUT_QUANTITE", DEFAUT_QUANTITE);
+console.log("DEFAUT_UNITE",DEFAUT_UNITE);
 
 inputNewItem.focus();
 
 const elFormSubmit = (e) => {
   e.preventDefault();
-  console.log("submit");
 
   //créer un élément <li></li> à partir du template
   const elListe = elTemplateItem.content.cloneNode(true);
@@ -27,41 +32,43 @@ const elFormSubmit = (e) => {
   // Supprimer les espaces des qu'il ya 2 espaces consécutifs avec une expression regulière
   nomItem = nomItem.replace(/\s{2,}/g, " ");
 
-  
   // es ce que le 1er mot est un num ?
-  let mot = nomItem.split(" ");
-  let premierMot = mot[0];
-  let quantite;
-  // console.log("mot =>", mot);
-  // console.log("premierMot =>", premierMot);
-  
+  let mots = nomItem.split(" ");
+  let premierMot = mots[0];
+  let deuxiemeMot = mots[1];
+  let troisiemeMot = mots[2];
+  let quantite = DEFAUT_QUANTITE;
+  let unite = DEFAUT_UNITE;
+
   if (Number.isInteger(Number(premierMot))) {
+    // si c'est une quantité il faut l'extraire
     quantite = Number(premierMot);
-    console.log("quantite =>", quantite);
+
+    // Si le 2eme mot est une unité, l'extraire
+    const UNITES = ["u.", "kg", "g", "L"];
+    if (UNITES.includes(deuxiemeMot)) {
+      unite = deuxiemeMot;
+      nomItem= mots.slice(2).join(' '); // mot[2].concat(" ",mot[3])
+      console.log("mots",mots);
+    }else{
+      // Sinon c'est que nom commence à partir du 2eme mot
+      nomItem = mots.slice(1).join(' ');
+      
+    }
   }
   
-  // si c'est une quantité il faut l'extraire
-  
-  // Sinon c'est que c'est juste un nom
-  
-  // Si le 2eme mot est une unité, l'extraire
-  
-  // Sinon c'est que le 2eme mot est un nom
   
   // Rendre le item avec une maj a la 1ere lettre
   nomItem = `${nomItem[0].toUpperCase()}${nomItem.slice(1)}`;
-  console.log("2- nomItem =>", nomItem);
   
   // injecter cette valeur dans l'element li
   const nomListe = elListe.querySelector(".nom");
-//  const unite = elListe.querySelector(".unite");
   const elQuantite = elListe.querySelector(".quantite");
-
+  const elUnite = elListe.querySelector(".unite");
+  
   nomListe.textContent = nomItem;
- elQuantite.textContent = quantite;
-  console.log("elQuantite 1 =>", elQuantite.textContent);
-
-
+  elQuantite.textContent = quantite;
+  elUnite.value = unite;
 
   //Ajouter l'élément li dans la liste ul
   liste.append(elListe);
@@ -73,13 +80,11 @@ const elFormSubmit = (e) => {
 elForm.addEventListener("submit", elFormSubmit);
 
 inputNewItem.addEventListener("input", () => {
-  console.log("input");
   inputNewItem.setCustomValidity("");
   inputNewItem.checkVisibility();
 });
 
 inputNewItem.addEventListener("invalid", () => {
-  console.log("invalide");
   const nom = inputNewItem.value;
   if (nom.length == 0) {
     inputNewItem.setCustomValidity(
