@@ -236,6 +236,7 @@ input.nom {
   text-indent: var(--dim-3);
   padding: 0;
   padding-right: var(--dim-3);
+  min-width: 0;
 }
 
 input.nom:focus {

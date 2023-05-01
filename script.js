@@ -18,41 +18,74 @@ const UNITES = [];
 for (let i = 0; i < u.options.length; i++) {
   UNITES.push(u.options[i].value);
 }
-console.log(UNITES);
 
 let listeItems = [];
 // Chargement des donnees depuis  localStorage
 const CLE_LOCAL_STORAGE = "liste";
+
 const donnees = localStorage.getItem(CLE_LOCAL_STORAGE);
-if(donnees !== null){
-// on charge les données
-listeItems = JSON.parse(donnees);
-// Parcourir listeItems
-for(let i=0; i< listeItems.length; i++){
+if (donnees !== null) {
+  // on charge les données
+  listeItems = JSON.parse(donnees);
+  // Parcourir listeItems
+  for (let i = 0; i < listeItems.length; i++) {
     //créer un élément <li></li> à partir du template
     const elLi = creatElementLI(listeItems[i]);
     // On ajoute l'element à la liste <ul></ul>
     elListe.append(elLi);
-
-
-}
+  }
 }
 
 inputNewItem.focus();
 
-function creatElementLI(objecItem){
-    //créer un élément <li></li> à partir du template
-    const elLi = elTemplateItem.content.cloneNode(true);
-      // injecter cette valeur dans l'element li
+function creatElementLI(objecItem) {
+  //créer un élément <li></li> à partir du template
+  const elLi = elTemplateItem.content.cloneNode(true);
+  const elNom = elLi.querySelector(".nom");
+  // injecter cette valeur dans l'element li
   const nomListe = elLi.querySelector(".nom");
   const elQuantite = elLi.querySelector(".quantite");
   const elUnite = elLi.querySelector(".unite");
+
+  elNom.addEventListener("focus", function (e) {
+    // Transformer de l'element <p></p> en type <iput type="text"></iput>
+    //creer son remplacant l'<iput type="text"></iput>
+    const elInput = document.createElement("input");
+    elInput.type = "text";
+    elInput.className = elNom.className;
+    // Injecter le nom provenant de <p ></p> dans <inpu></inpu>
+    const nom = elNom.textContent;
+    elInput.value = nom; // on peut faire aussi input.setAttribute("value",nom):
+
+    // Remplacer l'element <p></p> par <input>
+    elNom.replaceWith(elInput);
+
+    elInput.focus();
+
+    // Lorsqu'on quitte l'input, il faut remettre <p></p> mis à jour
+    const gestionBlur = (e) => {
+      elNom.textContent = elInput.value;
+      elInput.replaceWith(elNom);
+    };
+
+    elInput.addEventListener("blur", gestionBlur);
+
+    // Si on appuie sur ENTREE, il faut également remplacer par <p>
+    elInput.addEventListener("keydown", function (e) {
+      elNom.textContent = elInput.value;
+
+      if (e.key == "Enter") {
+        elInput.removeEventListener("blur", gestionBlur);
+        gestionBlur();
+      }
+    });
+  });
 
   nomListe.textContent = objecItem.nom;
   elQuantite.textContent = objecItem.quantite;
   elUnite.value = objecItem.unite;
 
-    return elLi;
+  return elLi;
 }
 
 const elFormSubmit = (e) => {
@@ -78,7 +111,6 @@ const elFormSubmit = (e) => {
   localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(ListeItems));
 
   const elLi = creatElementLI(objecItem);
-
 
   //Ajouter l'élément li dans la liste ul
   liste.append(elLi);
