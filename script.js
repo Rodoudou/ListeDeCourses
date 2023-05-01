@@ -8,13 +8,13 @@ const elementListe = document.querySelector("li");
 const btnExporter = document.querySelector("#exporter");
 const elTemplateItem = document.querySelector("#template-item");
 // const btnSupprimer = document.querySelector('button.bouton.supprimer');
-const q =  elTemplateItem.content.querySelector(".quantite");
-const  u = elTemplateItem.content.querySelector(".unite");
+const q = elTemplateItem.content.querySelector(".quantite");
+const u = elTemplateItem.content.querySelector(".unite");
 
 const DEFAUT_QUANTITE = Number(q.textContent);
-const  DEFAUT_UNITE = u.selectedOptions[0].value;
+const DEFAUT_UNITE = u.selectedOptions[0].value;
 console.log("DEFAUT_QUANTITE", DEFAUT_QUANTITE);
-console.log("DEFAUT_UNITE",DEFAUT_UNITE);
+console.log("DEFAUT_UNITE", DEFAUT_UNITE);
 
 inputNewItem.focus();
 
@@ -32,43 +32,18 @@ const elFormSubmit = (e) => {
   // Supprimer les espaces des qu'il ya 2 espaces consécutifs avec une expression regulière
   nomItem = nomItem.replace(/\s{2,}/g, " ");
 
-  // es ce que le 1er mot est un num ?
-  let mots = nomItem.split(" ");
-  let premierMot = mots[0];
-  let deuxiemeMot = mots[1];
-  let troisiemeMot = mots[2];
-  let quantite = DEFAUT_QUANTITE;
-  let unite = DEFAUT_UNITE;
+  const objecItem = extraireDonnees(nomItem);
 
-  if (Number.isInteger(Number(premierMot))) {
-    // si c'est une quantité il faut l'extraire
-    quantite = Number(premierMot);
+//console.log(objecItem);
 
-    // Si le 2eme mot est une unité, l'extraire
-    const UNITES = ["u.", "kg", "g", "L"];
-    if (UNITES.includes(deuxiemeMot)) {
-      unite = deuxiemeMot;
-      nomItem= mots.slice(2).join(' '); // mot[2].concat(" ",mot[3])
-      console.log("mots",mots);
-    }else{
-      // Sinon c'est que nom commence à partir du 2eme mot
-      nomItem = mots.slice(1).join(' ');
-      
-    }
-  }
-  
-  
-  // Rendre le item avec une maj a la 1ere lettre
-  nomItem = `${nomItem[0].toUpperCase()}${nomItem.slice(1)}`;
-  
   // injecter cette valeur dans l'element li
   const nomListe = elListe.querySelector(".nom");
   const elQuantite = elListe.querySelector(".quantite");
   const elUnite = elListe.querySelector(".unite");
-  
-  nomListe.textContent = nomItem;
-  elQuantite.textContent = quantite;
-  elUnite.value = unite;
+
+  nomListe.textContent = objecItem.nom;
+  elQuantite.textContent = objecItem.quantite;
+  elUnite.value = objecItem.unite;
 
   //Ajouter l'élément li dans la liste ul
   liste.append(elListe);
@@ -77,6 +52,39 @@ const elFormSubmit = (e) => {
 
   inputNewItem.focus();
 };
+
+// insertion intelligente refactoring
+function extraireDonnees(nomItem) {
+  // es ce que le 1er mot est un num ?
+  let mots = nomItem.split(" ");
+  let premierMot = mots[0];
+  let deuxiemeMot = mots[1];
+
+  const objecItem = {
+    nom: nomItem,
+    quantite: DEFAUT_QUANTITE,
+    unite: DEFAUT_UNITE,
+  };
+
+  if (Number.isInteger(Number(premierMot))) {
+    // si c'est une quantité il faut l'extraire
+    objecItem.quantite = Number(premierMot);
+
+    // Si le 2eme mot est une unité, l'extraire
+    const UNITES = ["u.", "kg", "g", "L"];
+    if (UNITES.includes(deuxiemeMot)) {
+      objecItem.unite = deuxiemeMot;
+      objecItem.nom = mots.slice(2).join(" "); // mot[2].concat(" ",mot[3])
+    } else {
+      // Sinon c'est que nom commence à partir du 2eme mot
+      objecItem.nom = mots.slice(1).join(" ");
+    }
+  }
+
+    // Rendre le item avec une maj a la 1ere lettre
+    objecItem.nom = `${objecItem.nom[0].toUpperCase()}${objecItem.nom.slice(1)}`;
+  return objecItem;
+}
 elForm.addEventListener("submit", elFormSubmit);
 
 inputNewItem.addEventListener("input", () => {
@@ -103,8 +111,3 @@ inputNewItem.addEventListener("invalid", () => {
   //
 });
 
-// btnAjouterOnClick = () => {
-//   console.log("kikou");
-//   console.log("btnSupprimer", btnSupprimer);
-// };
-// btnSupprimer.addEventListener("click", btnAjouterOnClick);
