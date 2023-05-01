@@ -3,36 +3,65 @@ const body = document.body;
 const elForm = document.querySelector("form");
 const inputNewItem = document.querySelector("#nouvel-item");
 const btnAjouter = document.querySelector("#ajouter");
-const liste = document.querySelector("#liste");
+const elListe = document.querySelector("#liste");
 const elementListe = document.querySelector("li");
 const btnExporter = document.querySelector("#exporter");
 const elTemplateItem = document.querySelector("#template-item");
 // const btnSupprimer = document.querySelector('button.bouton.supprimer');
 const q = elTemplateItem.content.querySelector(".quantite");
 const u = elTemplateItem.content.querySelector(".unite");
-// console.log(u.options[0].value);
-// console.log(u.options[1].value);
-// console.log(u.options[2].value);
-// console.log(u.options[3].value);
+
 const DEFAUT_QUANTITE = Number(q.textContent);
 const DEFAUT_UNITE = u.selectedOptions[0].value;
 
 const UNITES = [];
-for(let i = 0; i< u.options.length; i++){
+for (let i = 0; i < u.options.length; i++) {
   UNITES.push(u.options[i].value);
 }
 console.log(UNITES);
 
+let listeItems = [];
+// Chargement des donnees depuis  localStorage
+const CLE_LOCAL_STORAGE = "liste";
+const donnees = localStorage.getItem(CLE_LOCAL_STORAGE);
+if(donnees !== null){
+// on charge les données
+listeItems = JSON.parse(donnees);
+// Parcourir listeItems
+for(let i=0; i< listeItems.length; i++){
+    //créer un élément <li></li> à partir du template
+    const elLi = creatElementLI(listeItems[i]);
+    // On ajoute l'element à la liste <ul></ul>
+    elListe.append(elLi);
+
+
+}
+}
+
 inputNewItem.focus();
 
-const elFormSubmit = (e) => {
-  e.preventDefault();
+function creatElementLI(objecItem){
+    //créer un élément <li></li> à partir du template
+    const elLi = elTemplateItem.content.cloneNode(true);
+      // injecter cette valeur dans l'element li
+  const nomListe = elLi.querySelector(".nom");
+  const elQuantite = elLi.querySelector(".quantite");
+  const elUnite = elLi.querySelector(".unite");
 
-  //créer un élément <li></li> à partir du template
-  const elListe = elTemplateItem.content.cloneNode(true);
+  nomListe.textContent = objecItem.nom;
+  elQuantite.textContent = objecItem.quantite;
+  elUnite.value = objecItem.unite;
+
+    return elLi;
+}
+
+const elFormSubmit = (e) => {
+  // emepcher le chargement de la page
+  e.preventDefault();
 
   // Récuperer la valeur de l'input nouvel item
   let nomItem = inputNewItem.value;
+
   // Supprimer les espaces du début ou de la fin
   nomItem = nomItem.trim();
 
@@ -41,19 +70,18 @@ const elFormSubmit = (e) => {
 
   const objecItem = extraireDonnees(nomItem);
 
-//console.log(objecItem);
+  //console.log(objecItem);
 
-  // injecter cette valeur dans l'element li
-  const nomListe = elListe.querySelector(".nom");
-  const elQuantite = elListe.querySelector(".quantite");
-  const elUnite = elListe.querySelector(".unite");
+  //############################### stockage données################@
+  //Sauvegarder les donnes dans le storage
+  ListeItems.push(objecItem);
+  localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(ListeItems));
 
-  nomListe.textContent = objecItem.nom;
-  elQuantite.textContent = objecItem.quantite;
-  elUnite.value = objecItem.unite;
+  const elLi = creatElementLI(objecItem);
+
 
   //Ajouter l'élément li dans la liste ul
-  liste.append(elListe);
+  liste.append(elLi);
   // Effacer le input aprés avoir submit
   inputNewItem.value = "";
 
@@ -78,7 +106,7 @@ function extraireDonnees(nomItem) {
     objecItem.quantite = Number(premierMot);
 
     // Si le 2eme mot est une unité, l'extraire
-  
+
     if (UNITES.includes(deuxiemeMot)) {
       objecItem.unite = deuxiemeMot;
       objecItem.nom = mots.slice(2).join(" "); // mot[2].concat(" ",mot[3])
@@ -88,8 +116,9 @@ function extraireDonnees(nomItem) {
     }
   }
 
-    // Rendre le item avec une maj a la 1ere lettre
-    objecItem.nom = `${objecItem.nom[0].toUpperCase()}${objecItem.nom.slice(1)}`;
+  // Rendre le item avec une maj a la 1ere lettre
+  objecItem.nom = `${objecItem.nom[0].toUpperCase()}${objecItem.nom.slice(1)}`;
+
   return objecItem;
 }
 elForm.addEventListener("submit", elFormSubmit);
@@ -117,4 +146,3 @@ inputNewItem.addEventListener("invalid", () => {
   }
   //
 });
-
