@@ -36,52 +36,71 @@ if (donnees !== null) {
   }
 }
 
-inputNewItem.focus();
 
-function creatElementLI(objecItem) {
-  //créer un élément <li></li> à partir du template
-  const elLi = elTemplateItem.content.cloneNode(true);
-  const elNom = elLi.querySelector(".nom");
-  // injecter cette valeur dans l'element li
-  const nomListe = elLi.querySelector(".nom");
-  const elQuantite = elLi.querySelector(".quantite");
-  const elUnite = elLi.querySelector(".unite");
-
-  elNom.addEventListener("focus", function (e) {
+function remplacerParagrapheParInput(e){
+const elP = e.target;
+console.log("elP",elP);
     // Transformer de l'element <p></p> en type <iput type="text"></iput>
-    //creer son remplacant l'<iput type="text"></iput>
+    //creer un <input>
     const elInput = document.createElement("input");
-    elInput.type = "text";
-    elInput.className = elNom.className;
+    console.log("elInput",elInput);
+    //Si on a cliqué sur le nomm ... on fait un type="text"
+    if( elP.classList.contains("nom")){
+      elInput.type = "text";
+    }else{
+      // Sinon on fait type="number" et ajouter les attributs min max
+      elInput.type = "number";
+      elInput.min = "1";
+      elInput.max = "999";
+      console.log("icii le elInput",elInput);
+
+    }
+    
+    elInput.className = elP.className;
+
     // Injecter le nom provenant de <p ></p> dans <inpu></inpu>
-    const nom = elNom.textContent;
+    const nom = elP.textContent;
     elInput.value = nom; // on peut faire aussi input.setAttribute("value",nom):
 
     // Remplacer l'element <p></p> par <input>
-    elNom.replaceWith(elInput);
+    elP.replaceWith(elInput);
 
     elInput.focus();
 
     // Lorsqu'on quitte l'input, il faut remettre <p></p> mis à jour
     const gestionBlur = (e) => {
-      elNom.textContent = elInput.value;
-      elInput.replaceWith(elNom);
+      elP.textContent = elInput.value;
+      elInput.replaceWith(elP);
     };
 
     elInput.addEventListener("blur", gestionBlur);
 
     // Si on appuie sur ENTREE, il faut également remplacer par <p>
     elInput.addEventListener("keydown", function (e) {
-      elNom.textContent = elInput.value;
+      elP.textContent = elInput.value;
 
       if (e.key == "Enter") {
         elInput.removeEventListener("blur", gestionBlur);
         gestionBlur();
       }
     });
-  });
+  
+}
 
-  nomListe.textContent = objecItem.nom;
+function creatElementLI(objecItem) {
+  //créer un élément <li></li> à partir du template
+  const elLi = elTemplateItem.content.cloneNode(true);
+  // injecter cette valeur dans l'element li
+  // selectionner element<p></p>
+  const elNom = elLi.querySelector(".nom");
+  const elQuantite = elLi.querySelector(".quantite");
+  const elUnite = elLi.querySelector(".unite");
+
+elNom.addEventListener("focus", remplacerParagrapheParInput);
+elQuantite.addEventListener('focus', remplacerParagrapheParInput);
+
+
+  elNom.textContent = objecItem.nom;
   elQuantite.textContent = objecItem.quantite;
   elUnite.value = objecItem.unite;
 
@@ -107,8 +126,8 @@ const elFormSubmit = (e) => {
 
   //############################### stockage données################@
   //Sauvegarder les donnes dans le storage
-  ListeItems.push(objecItem);
-  localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(ListeItems));
+  listeItems.push(objecItem);
+  localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(listeItems));
 
   const elLi = creatElementLI(objecItem);
 
