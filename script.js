@@ -10,11 +10,18 @@ const elTemplateItem = document.querySelector("#template-item");
 // const btnSupprimer = document.querySelector('button.bouton.supprimer');
 const q = elTemplateItem.content.querySelector(".quantite");
 const u = elTemplateItem.content.querySelector(".unite");
-
+// console.log(u.options[0].value);
+// console.log(u.options[1].value);
+// console.log(u.options[2].value);
+// console.log(u.options[3].value);
 const DEFAUT_QUANTITE = Number(q.textContent);
 const DEFAUT_UNITE = u.selectedOptions[0].value;
-console.log("DEFAUT_QUANTITE", DEFAUT_QUANTITE);
-console.log("DEFAUT_UNITE", DEFAUT_UNITE);
+
+const UNITES = [];
+for(let i = 0; i< u.options.length; i++){
+  UNITES.push(u.options[i].value);
+}
+console.log(UNITES);
 
 inputNewItem.focus();
 
@@ -71,7 +78,7 @@ function extraireDonnees(nomItem) {
     objecItem.quantite = Number(premierMot);
 
     // Si le 2eme mot est une unité, l'extraire
-    const UNITES = ["u.", "kg", "g", "L"];
+  
     if (UNITES.includes(deuxiemeMot)) {
       objecItem.unite = deuxiemeMot;
       objecItem.nom = mots.slice(2).join(" "); // mot[2].concat(" ",mot[3])
