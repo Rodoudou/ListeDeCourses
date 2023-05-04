@@ -7,7 +7,6 @@ const elListe = document.querySelector("#liste");
 const elementListe = document.querySelector("li");
 const btnExporter = document.querySelector("#exporter");
 const elTemplateItem = document.querySelector("#template-item");
-// const btnSupprimer = document.querySelector('button.bouton.supprimer');
 const q = elTemplateItem.content.querySelector(".quantite");
 const u = elTemplateItem.content.querySelector(".unite");
 
@@ -85,11 +84,9 @@ function remplacerParagrapheParInput(e) {
     // On cherche l'element li parent
     const index = inexDeLiDansListe(element);
 
-    if (element.classList.contains("nom")) {
-      listeItems[index].nom = element.value;
-    } else {
-      listeItems[index].quantite = Number(element.value);
-    }
+    element.classList.contains("nom")
+      ? (listeItems[index].nom = element.value)
+      : (listeItems[index].quantite = Number(element.value));
 
     // Mettre à jour la proprièté adéquate dans listeItems
     // Sauvegarder la liste
@@ -120,6 +117,29 @@ function creatElementLI(objecItem) {
   const elNom = elLi.querySelector(".nom");
   const elQuantite = elLi.querySelector(".quantite");
   const elUnite = elLi.querySelector(".unite");
+  const btnSupprimer = elLi.querySelector("button.bouton.supprimer");
+
+  btnSupprimer.addEventListener("click", function (e) {
+    const elementClick = e.currentTarget;
+    console.log("supprimer !");
+    //Detecter sur quel element on a cliqué ?
+    const index = inexDeLiDansListe(elementClick);
+    console.log(index);
+    // Supprimer cet élément de la listeItems
+    listeItems.splice(index, 1);
+    // sauvegatrder dans localStorage
+    sauvegarder();
+
+    //Supprimer l'item li de la liste ul avec une animation
+    const li = elListe.children[index];
+    // On ajoute le gestionnaire d'evenement
+    li.addEventListener("transitionend", function () {
+      e.propertyName === "height" ? li.remove() : null;
+    });
+
+    // On ajoute la classe qui va générer l'animation
+    li.classList.add("suppression");
+  });
 
   elNom.addEventListener("focus", remplacerParagrapheParInput);
   elQuantite.addEventListener("focus", remplacerParagrapheParInput);
