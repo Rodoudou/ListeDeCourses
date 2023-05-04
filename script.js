@@ -36,55 +36,80 @@ if (donnees !== null) {
   }
 }
 
+function sauvegarder() {
+  localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(listeItems));
+}
 
-function remplacerParagrapheParInput(e){
-const elP = e.target;
-console.log("elP",elP);
-    // Transformer de l'element <p></p> en type <iput type="text"></iput>
-    //creer un <input>
-    const elInput = document.createElement("input");
-    console.log("elInput",elInput);
-    //Si on a cliqué sur le nomm ... on fait un type="text"
-    if( elP.classList.contains("nom")){
-      elInput.type = "text";
-    }else{
-      // Sinon on fait type="number" et ajouter les attributs min max
-      elInput.type = "number";
-      elInput.min = "1";
-      elInput.max = "999";
-      console.log("icii le elInput",elInput);
+function inexDeLiDansListe(element) {
+  const li = element.closest("li");
+  const enfants = Array.from(elListe.children);
+  return enfants.indexOf(li);
+}
 
+function remplacerParagrapheParInput(e) {
+  const elP = e.target;
+  console.log("elP", elP);
+  // Transformer de l'element <p></p> en type <iput type="text"></iput>
+  //creer un <input>
+  const elInput = document.createElement("input");
+  console.log("elInput", elInput);
+  //Si on a cliqué sur le nomm ... on fait un type="text"
+  if (elP.classList.contains("nom")) {
+    elInput.type = "text";
+  } else {
+    // Sinon on fait type="number" et ajouter les attributs min max
+    elInput.type = "number";
+    elInput.min = "1";
+    elInput.max = "999";
+  }
+
+  elInput.className = elP.className;
+
+  // Injecter le nom provenant de <p ></p> dans <inpu></inpu>
+  const nom = elP.textContent;
+  elInput.value = nom; // on peut faire aussi input.setAttribute("value",nom):
+
+  // Remplacer l'element <p></p> par <input>
+  elP.replaceWith(elInput);
+
+  elInput.focus();
+
+  // Lorsqu'on quitte l'input, il faut remettre <p></p> mis à jour
+  const gestionBlur = (e) => {
+    // stocker les données dans localStorage
+
+    // Détecter ce qu'on à modifier, le nom ou la quantité ?
+
+    const element = e.target;
+
+    // On cherche l'element li parent
+    const index = inexDeLiDansListe(element);
+
+    if (element.classList.contains("nom")) {
+      listeItems[index].nom = element.value;
+    } else {
+      listeItems[index].quantite = Number(element.value);
     }
-    
-    elInput.className = elP.className;
 
-    // Injecter le nom provenant de <p ></p> dans <inpu></inpu>
-    const nom = elP.textContent;
-    elInput.value = nom; // on peut faire aussi input.setAttribute("value",nom):
+    // Mettre à jour la proprièté adéquate dans listeItems
+    // Sauvegarder la liste
+    sauvegarder();
 
-    // Remplacer l'element <p></p> par <input>
-    elP.replaceWith(elInput);
+    elP.textContent = elInput.value;
+    elInput.replaceWith(elP);
+  };
 
-    elInput.focus();
+  elInput.addEventListener("blur", gestionBlur);
 
-    // Lorsqu'on quitte l'input, il faut remettre <p></p> mis à jour
-    const gestionBlur = (e) => {
-      elP.textContent = elInput.value;
-      elInput.replaceWith(elP);
-    };
+  // Si on appuie sur ENTREE, il faut également remplacer par <p>
+  elInput.addEventListener("keydown", function (e) {
+    elP.textContent = elInput.value;
 
-    elInput.addEventListener("blur", gestionBlur);
-
-    // Si on appuie sur ENTREE, il faut également remplacer par <p>
-    elInput.addEventListener("keydown", function (e) {
-      elP.textContent = elInput.value;
-
-      if (e.key == "Enter") {
-        elInput.removeEventListener("blur", gestionBlur);
-        gestionBlur();
-      }
-    });
-  
+    if (e.key == "Enter") {
+      elInput.removeEventListener("blur", gestionBlur);
+      gestionBlur(e);
+    }
+  });
 }
 
 function creatElementLI(objecItem) {
@@ -96,9 +121,13 @@ function creatElementLI(objecItem) {
   const elQuantite = elLi.querySelector(".quantite");
   const elUnite = elLi.querySelector(".unite");
 
-elNom.addEventListener("focus", remplacerParagrapheParInput);
-elQuantite.addEventListener('focus', remplacerParagrapheParInput);
-
+  elNom.addEventListener("focus", remplacerParagrapheParInput);
+  elQuantite.addEventListener("focus", remplacerParagrapheParInput);
+  elUnite.addEventListener("change", function (e) {
+    const index = inexDeLiDansListe(elUnite);
+    listeItems[index].unite = elUnite.value;
+    sauvegarder();
+  });
 
   elNom.textContent = objecItem.nom;
   elQuantite.textContent = objecItem.quantite;
@@ -127,7 +156,7 @@ const elFormSubmit = (e) => {
   //############################### stockage données################@
   //Sauvegarder les donnes dans le storage
   listeItems.push(objecItem);
-  localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(listeItems));
+  sauvegarder();
 
   const elLi = creatElementLI(objecItem);
 
@@ -195,5 +224,4 @@ inputNewItem.addEventListener("invalid", () => {
       "Les caractères spéciaux, les accents et autres lettres ne sont pas autorisés."
     );
   }
-  //
 });
