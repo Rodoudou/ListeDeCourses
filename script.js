@@ -293,9 +293,3 @@ btnExporter.addEventListener("click", function (e) {
   console.log(url);
   // window.location = url
 });
-
-//Changement de l'ordre des items 1/5
-// const element = document.querySelector("#template-item")
-// element.addEventListener('mousedown',function (e) {
-//   console.log("mousedown ");
-//   })
