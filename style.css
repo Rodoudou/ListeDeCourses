@@ -215,6 +215,13 @@ li {
   cursor: grabbing;
 }
 
+.poignee:focus {
+  box-shadow: none;
+}
+.poignee > img {
+  pointer-events: none;
+}
+
 .nom {
   transition: flex-grow ease var(--transition-duration);
 }

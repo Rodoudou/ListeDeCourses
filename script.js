@@ -110,14 +110,16 @@ function remplacerParagrapheParInput(e) {
 }
 
 function creatElementLI(objecItem) {
-  //créer un élément <li></li> à partir du template
-  const elLi = elTemplateItem.content.cloneNode(true);
+  //créer un fragment de document à partir du template
+  const fragmentDoc = elTemplateItem.content.cloneNode(true);
   // injecter cette valeur dans l'element li
   // selectionner element<p></p>
-  const elNom = elLi.querySelector(".nom");
-  const elQuantite = elLi.querySelector(".quantite");
-  const elUnite = elLi.querySelector(".unite");
-  const btnSupprimer = elLi.querySelector("button.bouton.supprimer");
+  const elLi = fragmentDoc.querySelector("li");
+  const elNom = fragmentDoc.querySelector(".nom");
+  const elQuantite = fragmentDoc.querySelector(".quantite");
+  const elUnite = fragmentDoc.querySelector(".unite");
+  const btnSupprimer = fragmentDoc.querySelector("button.bouton.supprimer");
+  const elPognee = fragmentDoc.querySelector(".poignee");
 
   btnSupprimer.addEventListener("click", function (e) {
     const elementClick = e.currentTarget;
@@ -131,7 +133,7 @@ function creatElementLI(objecItem) {
     sauvegarder();
 
     //Supprimer l'item li de la liste ul avec une animation
-    const li = elListe.children[index];
+    const li = fragmentDocste.children[index];
     // On ajoute le gestionnaire d'evenement
     li.addEventListener("transitionend", function () {
       e.propertyName === "height" ? li.remove() : null;
@@ -153,7 +155,32 @@ function creatElementLI(objecItem) {
   elQuantite.textContent = objecItem.quantite;
   elUnite.value = objecItem.unite;
 
-  return elLi;
+  elPognee.addEventListener("mousedown", demarrerDeplacement);
+  elPognee.addEventListener("mouseup", function (e) {
+    elLi.removeAttribute('draggable');
+    });
+    elLi.addEventListener("dragstart", dragStart);
+  elLi.addEventListener("dragend", dragEnd);
+
+  return fragmentDoc;
+}
+function demarrerDeplacement(e) {
+  const poignee = e.currentTarget;
+  const elParentLi = poignee.closest("li");
+  elParentLi.setAttribute("draggable", "true");
+}
+
+function dragStart(e) { 
+  const li = e.currentTarget;
+  li.classList.add("drag-start");
+ }
+
+
+function dragEnd(e) {
+  console.log("dragEnd ");
+  const li = e.currentTarget;
+  li.removeAttribute("draggable");
+  li.classList.remove("drag-start");
 }
 
 const elFormSubmit = (e) => {
@@ -178,10 +205,10 @@ const elFormSubmit = (e) => {
   listeItems.push(objecItem);
   sauvegarder();
 
-  const elLi = creatElementLI(objecItem);
+  const fragmentDoc = creatElementLI(objecItem);
 
   //Ajouter l'élément li dans la liste ul
-  liste.append(elLi);
+  liste.append(fragmentDoc);
   // Effacer le input aprés avoir submit
   inputNewItem.value = "";
 
@@ -266,3 +293,9 @@ btnExporter.addEventListener("click", function (e) {
   console.log(url);
   // window.location = url
 });
+
+//Changement de l'ordre des items 1/5
+// const element = document.querySelector("#template-item")
+// element.addEventListener('mousedown',function (e) {
+//   console.log("mousedown ");
+//   })
