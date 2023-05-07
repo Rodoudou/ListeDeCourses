@@ -35,11 +35,20 @@ if (donnees !== null) {
   }
 }
 
+// Création d'un unique indicateur
+const indicateur = document.createElement("li");
+indicateur.classList.add("indicateur");
+indicateur.addEventListener("dragover", function (e) {
+  e.preventDefault();
+});
+indicateur.addEventListener("drop", drop);
+let itemEnDeplacement;
+
 function sauvegarder() {
   localStorage.setItem(CLE_LOCAL_STORAGE, JSON.stringify(listeItems));
 }
 
-function inexDeLiDansListe(element) {
+function indexDeLiDansListe(element) {
   const li = element.closest("li");
   const enfants = Array.from(elListe.children);
   return enfants.indexOf(li);
@@ -125,7 +134,7 @@ function creatElementLI(objecItem) {
     const elementClick = e.currentTarget;
     console.log("supprimer !");
     //Detecter sur quel element on a cliqué ?
-    const index = inexDeLiDansListe(elementClick);
+    const index = indexDeLiDansListe(elementClick);
     console.log(index);
     // Supprimer cet élément de la listeItems
     listeItems.splice(index, 1);
@@ -133,10 +142,12 @@ function creatElementLI(objecItem) {
     sauvegarder();
 
     //Supprimer l'item li de la liste ul avec une animation
-    const li = fragmentDocste.children[index];
+    const li = elListe.children[index];
     // On ajoute le gestionnaire d'evenement
-    li.addEventListener("transitionend", function () {
-      e.propertyName === "height" ? li.remove() : null;
+    li.addEventListener("transitionend", function (e) {
+      if (e.propertyName === "height") {
+        li.remove();
+      }
     });
 
     // On ajoute la classe qui va générer l'animation
@@ -157,30 +168,92 @@ function creatElementLI(objecItem) {
 
   elPognee.addEventListener("mousedown", demarrerDeplacement);
   elPognee.addEventListener("mouseup", function (e) {
-    elLi.removeAttribute('draggable');
-    });
-    elLi.addEventListener("dragstart", dragStart);
+    elLi.removeAttribute("draggable");
+  });
+  elLi.addEventListener("dragstart", dragStart);
   elLi.addEventListener("dragend", dragEnd);
+
+  // Affichage de l'indicateur
+  elLi.addEventListener("dragover", dragOver);
+
+  // Gestion du relachement du bouton de la souris
+  elLi.addEventListener("drop", drop);
 
   return fragmentDoc;
 }
+
+function drop(e) {
+  console.log("drop");
+
+  // Si il y a un indicateur, alors on déplace l'item
+  const positionIndicateur = indexDeLiDansListe(indicateur);
+  if (positionIndicateur >= 0) {
+    indicateur.replaceWith(itemEnDeplacement);
+  }
+}
+
+function dragOver(e) {
+  // Permettre à l'élément d'être une cible de dépot
+  e.preventDefault();
+
+  const li = e.currentTarget;
+
+  const milieu = li.offsetHeight / 2; // 56px => 28px
+  const positionCurseur = e.offsetY;
+
+  // Si l'item qui est survolé est l'item en déplacement
+  // Ou si on survole la partie inférieure de l'item précédent
+  // Ou si on survole la partie superieur de l'item suivant
+  // Alors il faut supprimé l'indicateur
+
+  if (
+    li === itemEnDeplacement ||
+    (li === itemEnDeplacement.previousElementSibling &&
+      positionCurseur > milieu) ||
+    (li === itemEnDeplacement.nextElementSibling && positionCurseur <= milieu)
+  ) {
+    indicateur.remove();
+  } else {
+    // Sinon il faut afficher l'indicateur
+    if (positionCurseur <= milieu) {
+      // Au-dessus
+      if (li.previousElementSibling !== indicateur) {
+        // On ajoute l'indicateur au dessus de l'item
+        li.before(indicateur);
+      }
+    } else {
+      // En dessous
+      if (li.nextElementSibling !== indicateur) {
+        // On ajoute l'indicateur en dessous de l'item
+        li.after(indicateur);
+      }
+    }
+  }
+}
+
 function demarrerDeplacement(e) {
   const poignee = e.currentTarget;
   const elParentLi = poignee.closest("li");
   elParentLi.setAttribute("draggable", "true");
 }
 
-function dragStart(e) { 
+function dragStart(e) {
   const li = e.currentTarget;
   li.classList.add("drag-start");
- }
-
+  itemEnDeplacement = li;
+  elListe.classList.add("drag-en-cours");
+}
 
 function dragEnd(e) {
-  console.log("dragEnd ");
   const li = e.currentTarget;
   li.removeAttribute("draggable");
   li.classList.remove("drag-start");
+  elListe.classList.remove("drag-en-cours");
+
+  const positionIndicateur = indexDeLiDansListe(indicateur);
+  if (positionIndicateur >= 0) {
+    indicateur.remove();
+  }
 }
 
 const elFormSubmit = (e) => {
@@ -290,6 +363,6 @@ btnExporter.addEventListener("click", function (e) {
   let url = "mailto:amrani.redouane@gmail.com";
   url += "?subject=Liste de courses";
   url += "&body=" + corps;
-  console.log(url);
-  // window.location = url
+  console.log("URL =>", url);
+  window.location = url;
 });
