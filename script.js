@@ -42,6 +42,8 @@ indicateur.addEventListener("dragover", function (e) {
   e.preventDefault();
 });
 indicateur.addEventListener("drop", drop);
+
+let positionIndicateur;
 let itemEnDeplacement;
 
 function sauvegarder() {
@@ -91,7 +93,7 @@ function remplacerParagrapheParInput(e) {
     const element = e.target;
 
     // On cherche l'element li parent
-    const index = inexDeLiDansListe(element);
+    const index = indexDeLiDansListe(element);
 
     element.classList.contains("nom")
       ? (listeItems[index].nom = element.value)
@@ -183,11 +185,27 @@ function creatElementLI(objecItem) {
 }
 
 function drop(e) {
-  console.log("drop");
 
-  // Si il y a un indicateur, alors on déplace l'item
+  console.table(listeItems);
   const positionIndicateur = indexDeLiDansListe(indicateur);
+  
+  // Si il y a un indicateur, alors on déplace l'item
   if (positionIndicateur >= 0) {
+    // Mettre à jour les données de la liste
+    // 1- supprimer l'item en déplacement
+    const item = listeItems.splice(positionIntiale, 1)[0];
+    // 2- Ajouter l'item en déplacement à la position de l'indicateur
+    if (positionIndicateur > positionIntiale) {
+      // Si l'indicateur  est après l'item à déplacer, on compense
+      // le decalage creer par l'indicateur
+      listeItems.splice(positionIndicateur - 1, 0, item);
+    } else {
+      listeItems.splice(positionIndicateur, 0, item);
+    }
+
+    // Sauvegarde des données
+    sauvegarder();
+
     indicateur.replaceWith(itemEnDeplacement);
   }
 }
@@ -241,6 +259,7 @@ function dragStart(e) {
   const li = e.currentTarget;
   li.classList.add("drag-start");
   itemEnDeplacement = li;
+  positionIntiale = indexDeLiDansListe(itemEnDeplacement);
   elListe.classList.add("drag-en-cours");
 }
 
