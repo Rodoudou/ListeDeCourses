@@ -223,24 +223,52 @@ function drop(e) {
             );
 
             // Additionner les 2 => hauteur total : "hauteurTotal"
-            const hauteurTotal = hauteurItem + margeTopItem;
+            let hauteurTotale = hauteurItem + margeTopItem;
 
             // Combien de items doit-on se déplacer ?
-            let nombreItems = positionIndicateur - positionIntiale - 1;
+            let nombreItems =
+              Math.abs(positionIndicateur - positionIntiale) - 1;
 
             //On vient compenser le décalage dù à l'indicateur
-            const deplacementVersLeHAut = positionIndicateur < positionIntiale;
-            if (deplacementVersLeHAut) {
+            const deplacementVersLeHaut = positionIndicateur < positionIntiale;
+            if (deplacementVersLeHaut) {
               nombreItems += 1;
+              hauteurTotale = -hauteurTotale;
             }
 
             itemEnDeplacement.style.transform += `translateY(${
-              nombreItems * hauteurTotal
+              nombreItems * hauteurTotale
             }px)`;
+
+            // Sélectionner les differents items de la liste à
+            // déplacer et les faire dans la direction opposée
+
+            let debut = positionIntiale + 1;
+            let fin = positionIndicateur;
+
+            if (deplacementVersLeHaut) {
+              debut = positionIndicateur;
+              fin = positionIntiale;
+            }
+
+            for (let i = debut; i < fin; i++) {
+              elListe.children[
+                i
+              ].style.transform = `translateY(${-hauteurTotale}px)`;
+            }
             break;
           case "deplacement":
-            // Si je suis dans la phase de déplacement alors faire...
+            itemEnDeplacement.dataset.phase = "atterrissage";
+            // Si je suis à la fin de la phase de déplacement alors faire...
             //atterissage  etc.
+
+            itemEnDeplacement.style.boxShadow = "";
+            let tr = itemEnDeplacement.style.transform;
+            // tr  => "scale(1.05) translateY(144px)"
+            // => "translateY(144px)"
+            tr = tr.replace("scale(1.05)", "");
+            tr = tr.trim();
+            itemEnDeplacement.style.transform = tr;
             break;
           default:
             break;
