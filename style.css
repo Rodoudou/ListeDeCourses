@@ -41,12 +41,10 @@ img {
   --transition-duration: 200ms;
 }
 
-
-
 /* Fontes & Typographie */
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -109,7 +107,7 @@ select {
 
 body {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-  url(/assets/img/fond.jpg);
+    url(/assets/img/fond.jpg);
   background-size: cover;
   min-height: 100vh;
   margin: 0;
@@ -121,12 +119,12 @@ p {
   line-height: 1;
   margin: 0;
   padding: var(--dim-3);
-} 
+}
 
 .bouton {
   background-color: var(--bleu-200);
   color: var(--bleu-500);
-  padding: .5em;
+  padding: 0.5em;
   border-radius: var(--border-radius);
   border: 0;
 }
@@ -187,14 +185,15 @@ li {
   margin-top: var(--dim-3);
   height: var(--dim-6);
   right: 0;
+  transition: box-shadow, transform;
+  transition-duration: 0.5s;
 }
 
 .suppression {
   transition-property: opacity, height, right, margin-top;
   transition-delay: 0s, 67ms;
   transition-duration: var(--transition-duration);
-  transition-timing-function: 
-    cubic-bezier(0, 0, 0.2, 1),
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1),
     cubic-bezier(0.68, -0.55, 0.32, 2.5);
   opacity: 0;
   position: relative;
@@ -275,7 +274,7 @@ input.nom:focus {
 }
 
 .select::after {
-  content: '';
+  content: "";
   display: block;
   color: var(--gris-300);
   width: var(--dim-3);
@@ -321,7 +320,7 @@ ul.drag-en-cours li {
 
 ul.drag-en-cours li::before,
 ul.drag-en-cours li::after {
-  content: '';
+  content: "";
   display: block;
   width: 100%;
   height: var(--dim-3);
@@ -337,7 +336,7 @@ ul.drag-en-cours li::after {
 }
 
 li.drag-start {
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .indicateur {

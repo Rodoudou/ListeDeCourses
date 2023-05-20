@@ -185,10 +185,9 @@ function creatElementLI(objecItem) {
 }
 
 function drop(e) {
-
   console.table(listeItems);
   const positionIndicateur = indexDeLiDansListe(indicateur);
-  
+
   // Si il y a un indicateur, alors on déplace l'item
   if (positionIndicateur >= 0) {
     // Mettre à jour les données de la liste
@@ -204,9 +203,56 @@ function drop(e) {
     }
 
     // Sauvegarde des données
-    sauvegarder();
+    //sauvegarder();
 
-    indicateur.replaceWith(itemEnDeplacement);
+    // indicateur.replaceWith(itemEnDeplacement);
+    itemEnDeplacement.addEventListener("transitionend", function (e) {
+      if (e.propertyName === "transform") {
+        const phase = itemEnDeplacement.dataset.phase;
+        // Si je suis dans la phase de décollage alors faire...
+        switch (phase) {
+          case "decollage":
+            itemEnDeplacement.dataset.phase = "deplacement";
+
+            // Récuperer la hauteur de l'item : "hauteurItem"
+            const hauteurItem = itemEnDeplacement.offsetHeight;
+
+            // Récuperer sa marge top : "margeTopItem"
+            const margeTopItem = Number.parseInt(
+              window.getComputedStyle(itemEnDeplacement).marginTop
+            );
+
+            // Additionner les 2 => hauteur total : "hauteurTotal"
+            const hauteurTotal = hauteurItem + margeTopItem;
+
+            // Combien de items doit-on se déplacer ?
+            let nombreItems = positionIndicateur - positionIntiale - 1;
+
+            //On vient compenser le décalage dù à l'indicateur
+            const deplacementVersLeHAut = positionIndicateur < positionIntiale;
+            if (deplacementVersLeHAut) {
+              nombreItems += 1;
+            }
+
+            itemEnDeplacement.style.transform += `translateY(${
+              nombreItems * hauteurTotal
+            }px)`;
+            break;
+          case "deplacement":
+            // Si je suis dans la phase de déplacement alors faire...
+            //atterissage  etc.
+            break;
+          default:
+            break;
+        }
+      }
+    });
+
+    itemEnDeplacement.dataset.phase = "decollage";
+    itemEnDeplacement.style.position = "relative";
+    itemEnDeplacement.style.zIndex = "1";
+    itemEnDeplacement.style.transform = "scale(1.05)";
+    itemEnDeplacement.style.boxShadow = "0 0 24px rgba(32,32,32,.8)";
   }
 }
 
