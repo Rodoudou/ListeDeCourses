@@ -58,11 +58,11 @@ function indexDeLiDansListe(element) {
 
 function remplacerParagrapheParInput(e) {
   const elP = e.target;
-  console.log("elP", elP);
+
   // Transformer de l'element <p></p> en type <iput type="text"></iput>
   //creer un <input>
   const elInput = document.createElement("input");
-  console.log("elInput", elInput);
+
   //Si on a cliqué sur le nomm ... on fait un type="text"
   if (elP.classList.contains("nom")) {
     elInput.type = "text";
@@ -134,10 +134,10 @@ function creatElementLI(objecItem) {
 
   btnSupprimer.addEventListener("click", function (e) {
     const elementClick = e.currentTarget;
-    console.log("supprimer !");
+
     //Detecter sur quel element on a cliqué ?
     const index = indexDeLiDansListe(elementClick);
-    console.log(index);
+
     // Supprimer cet élément de la listeItems
     listeItems.splice(index, 1);
     // sauvegatrder dans localStorage
@@ -203,8 +203,7 @@ function drop(e) {
     }
 
     // Sauvegarde des données
-    //sauvegarder();
-    // indicateur.replaceWith(itemEnDeplacement);
+    sauvegarder();
 
     //Animation de déplacement
 
@@ -405,8 +404,6 @@ const elFormSubmit = (e) => {
 
   const objecItem = extraireDonnees(nomItem);
 
-  //console.log(objecItem);
-
   //############################### stockage données################@
   //Sauvegarder les donnes dans le storage
   listeItems.push(objecItem);
@@ -481,8 +478,6 @@ inputNewItem.addEventListener("invalid", () => {
 });
 
 btnExporter.addEventListener("click", function (e) {
-  console.log("exporter");
-  console.log("listeItems", listeItems);
   // Recuperer les données de notre liste "ListeItems".
   // -<nom> (<quantite><unite>)%0D%0A
   let corps = "";
@@ -491,12 +486,10 @@ btnExporter.addEventListener("click", function (e) {
     const chaine = `- ${item.nom} (${item.quantite} ${item.unite})%0D%0A`;
     corps += chaine;
   }
-  console.log(corps);
 
   // Construire l'URL
   let url = "mailto:amrani.redouane@gmail.com";
   url += "?subject=Liste de courses";
   url += "&body=" + corps;
-  console.log("URL =>", url);
   window.location = url;
 });
