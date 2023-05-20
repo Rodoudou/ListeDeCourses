@@ -204,15 +204,24 @@ function drop(e) {
 
     // Sauvegarde des données
     //sauvegarder();
-
     // indicateur.replaceWith(itemEnDeplacement);
-    itemEnDeplacement.addEventListener("transitionend", function (e) {
+
+    //Animation de déplacement
+
+    // Constante pour les animations
+    const CSS_SCALE = "scale(1.05)";
+    const CSS_BOX_SHADOW = "0 0 24px rgba(32,32,32,.8)";
+    const PHASE_DECOLLAGE = "decollage";
+    const PHASE_DEPLACEMENT = "deplacement";
+    const PHASE_ATTERRISSAGE = "atterrissage";
+
+    function gestionAnimation(e) {
       if (e.propertyName === "transform") {
         const phase = itemEnDeplacement.dataset.phase;
         // Si je suis dans la phase de décollage alors faire...
         switch (phase) {
-          case "decollage":
-            itemEnDeplacement.dataset.phase = "deplacement";
+          case PHASE_DECOLLAGE:
+            itemEnDeplacement.dataset.phase = PHASE_DEPLACEMENT;
 
             // Récuperer la hauteur de l'item : "hauteurItem"
             const hauteurItem = itemEnDeplacement.offsetHeight;
@@ -257,8 +266,8 @@ function drop(e) {
               ].style.transform = `translateY(${-hauteurTotale}px)`;
             }
             break;
-          case "deplacement":
-            itemEnDeplacement.dataset.phase = "atterrissage";
+          case PHASE_DEPLACEMENT:
+            itemEnDeplacement.dataset.phase = PHASE_ATTERRISSAGE;
             // Si je suis à la fin de la phase de déplacement alors faire...
             //atterissage  etc.
 
@@ -266,21 +275,53 @@ function drop(e) {
             let tr = itemEnDeplacement.style.transform;
             // tr  => "scale(1.05) translateY(144px)"
             // => "translateY(144px)"
-            tr = tr.replace("scale(1.05)", "");
+            tr = tr.replace(CSS_SCALE, "");
             tr = tr.trim();
             itemEnDeplacement.style.transform = tr;
+            break;
+          case PHASE_ATTERRISSAGE:
+            itemEnDeplacement.removeAttribute("data-phase");
+
+            // Supprimer le gestionnaire d'evenements
+            itemEnDeplacement.removeEventListener(
+              "transitionend",
+              gestionAnimation
+            );
+            // Mettre à jour le DOM
+            // Cas particulier : Déplacement à la fin de la liste
+            if (positionIndicateur === elListe.children.length) {
+              elListe.children[positionIndicateur - 1].after(itemEnDeplacement);
+            } else {
+              elListe.children[positionIndicateur].before(itemEnDeplacement);
+            }
+
+            for (let i = 0; i < elListe.children.length; i++) {
+              const enfant = elListe.children[i];
+              enfant.removeAttribute("class");
+
+              enfant.style.transition = "none";
+              enfant.style.transform = "";
+
+              setTimeout(function () {
+                enfant.removeAttribute("style");
+              }, 0);
+            }
+            // Retirer les sytles CSS DDES ITEMS DE LA LISTE
+
             break;
           default:
             break;
         }
       }
-    });
+    }
 
-    itemEnDeplacement.dataset.phase = "decollage";
+    itemEnDeplacement.addEventListener("transitionend", gestionAnimation);
+
+    itemEnDeplacement.dataset.phase = PHASE_DECOLLAGE;
     itemEnDeplacement.style.position = "relative";
     itemEnDeplacement.style.zIndex = "1";
-    itemEnDeplacement.style.transform = "scale(1.05)";
-    itemEnDeplacement.style.boxShadow = "0 0 24px rgba(32,32,32,.8)";
+    itemEnDeplacement.style.transform = CSS_SCALE;
+    itemEnDeplacement.style.boxShadow = CSS_BOX_SHADOW;
   }
 }
 
